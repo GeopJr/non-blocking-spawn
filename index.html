@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Crystal Docs 1.2.2">
+<meta name="crystal_docs.project_version" content="main">
+<meta name="crystal_docs.project_name" content="non-blocking-spawn">
+
+
+
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/doc.js"></script>
+
+  <meta name="repository-name" content="non-blocking-spawn">
+  <title>non-blocking-spawn main</title>
+  <script type="text/javascript">
+  CrystalDocs.base_path = "";
+  </script>
+</head>
+<body>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="index.html">
+          non-blocking-spawn
+        </a>
+      </h1>
+
+      <span class="project-version">
+        main
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class="parent " data-id="non-blocking-spawn/Non" data-name="non">
+      <a href="Non.html">Non</a>
+      
+        <ul>
+  
+  <li class=" " data-id="non-blocking-spawn/Non/Blocking" data-name="non::blocking">
+      <a href="Non/Blocking.html">Blocking</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 align="center">non-blocking-spawn</h1>
+<h4 align="center">A Crystal shard that spawns a fiber in any worker thread BUT the current one.</h4>
+<h2><a id="purpose" class="anchor" href="#purpose">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Purpose</h2>
+<p>When running Crystal with <a href="https://crystal-lang.org/2019/09/06/parallelism-in-crystal.html"><code>-Dpreview_mt</code></a> sometimes fibers spawn in the current thread that might be blocked at that moment or for the duration of the run.
+This happens by design. Top level <code>spawn</code> has an option to force a fiber to spawn in the current thread (<code>same_thread</code>), but not one for the opposite (since it's probably not in high demand).
+That's what this shard adds.</p>
+<p>It's a copy of the spawn method but when <code>same_thread</code> is false, it goes through all available worker threads, filters out the current one and picks one at random to spawn the fiber in.</p>
+<p>While it might sound a bit useless, there are legit use cases:</p>
+<ul>
+<li>GTK: The main thread is blocked and remains blocked for the whole time. Using non-blocking-spawn you can spawn fibers and be sure that all of them will execute and finish.</li>
+<li>Wider range of examples (see: [<code>./spec/non-blocking-spawn_spec.cr](./spec/non-blocking-spawn_spec.cr)): In the spec, two of the tests are similar but one of them uses non-blocking-spawn while the other uses top level spawn. The first one finishes with</code>i<code>being equal to</code>4<code>(/default amount of worker threads) while the second one finishes with</code>i<code>being equal to</code>3`. This is due to one of the fibers being spawned in the current thread.</li>
+</ul>
+<h2><a id="warning" class="anchor" href="#warning">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>WARNING</h2>
+<ul>
+<li>
+<p>PLEASE don't use with newer or older versions of Crystal without checking that the spawn method is the same as the top level one (apart from the non-blocking-thread part). This shard uses private interfaces that may break at any point without notice.</p>
+</li>
+<li>
+<p>Assumes that all crystal commands (including <code>spec</code>) are being ran with the <code>-Dpreview_mt</code> flag. The <code>Non::Blocking.threads</code> method is available to check whether there are worker threads - other than the current one - and act accordingly (probably run in sync).</p>
+</li>
+</ul>
+<h2><a id="installation" class="anchor" href="#installation">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Installation</h2>
+<ol>
+<li>Add the dependency to your <code>shard.yml</code>:</li>
+</ol>
+<pre><code class="language-yaml">dependencies:
+  non-blocking-spawn:
+    github: GeopJr/non-blocking-spawn</code></pre>
+<ol start="2">
+<li>Run <code>shards install</code></li>
+</ol>
+<h2><a id="usage" class="anchor" href="#usage">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Usage</h2>
+<p>You can find non-blocking-spawn's docs on the sidebar.</p>
+<pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;non-blocking-spawn&quot;</span>
+
+<span class="t">Non</span><span class="t">::</span><span class="t">Blocking</span>.spawn <span class="k">do</span>
+  <span class="c"># expensive blocking code</span>
+<span class="k">end</span>
+
+<span class="c"># other expensive blocking code</span></code></pre>
+<h2><a id="development" class="anchor" href="#development">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Development</h2>
+<ul>
+<li>Everything runs with the <code>-Dpreview_mt</code> flag.</li>
+<li>When bumping Crystal version make sure that the method matches the top level one.</li>
+</ul>
+<h2><a id="contributing" class="anchor" href="#contributing">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Contributing</h2>
+<ol>
+<li>Read the <a href="https://github.com/GeopJr/non-blocking-spawn/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li>Fork it (<a href="https://github.com/GeopJr/non-blocking-spawn/fork">https://github.com/GeopJr/non-blocking-spawn/fork</a>)</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create a new Pull Request</li>
+</ol>
+</div>
+</body>
+</html>

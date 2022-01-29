@@ -87,7 +87,7 @@ That's what this shard adds.</p>
 <p>While it might sound a bit useless, there are legit use cases:</p>
 <ul>
 <li>GTK: The main thread is blocked and remains blocked for the whole time. Using non-blocking-spawn you can spawn fibers and be sure that all of them will execute and finish.</li>
-<li>Wider range of examples (see: [<code>./spec/non-blocking-spawn_spec.cr](./spec/non-blocking-spawn_spec.cr)): In the spec, two of the tests are similar but one of them uses non-blocking-spawn while the other uses top level spawn. The first one finishes with</code>i<code>being equal to</code>4<code>(/default amount of worker threads) while the second one finishes with</code>i<code>being equal to</code>3`. This is due to one of the fibers being spawned in the current thread.</li>
+<li>Wider range of examples (see: <a href="./spec/non-blocking-spawn_spec.cr"><code>./spec/non-blocking-spawn_spec.cr</code></a>): In the spec, two of the tests are similar but one of them uses non-blocking-spawn while the other uses top level spawn. The first one finishes with <code>i</code> being equal to <code>4</code> (/default amount of worker threads) while the second one finishes with <code>i</code> being equal to <code>3</code>. This is due to one of the fibers being spawned in the current thread.</li>
 </ul>
 <h2><a id="warning" class="anchor" href="#warning">
   <svg class="octicon-link" aria-hidden="true">

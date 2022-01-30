@@ -47,7 +47,7 @@ describe Non::Blocking do
 
     safe_stop = Time.utc.to_unix_ms
     loop do
-      if i == threads_plus_one - 1 || Time.utc.to_unix_ms - safe_stop > 10000
+      if i == threads_plus_one || Time.utc.to_unix_ms - safe_stop > 3000
         finish = i
         break
       end

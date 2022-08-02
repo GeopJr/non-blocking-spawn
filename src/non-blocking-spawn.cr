@@ -5,7 +5,7 @@
 # If only the current one is available, it falls back to leaving it up to
 # Crystal::Scheduler to decide.
 #
-# https://crystal-lang.org/api/1.4.1/toplevel.html#spawn%28%2A%2Cname%3AString%3F%3Dnil%2Csame_thread%3Dfalse%2C%26block%29-class-method
+# https://crystal-lang.org/api/1.5.0/toplevel.html#spawn%28%2A%2Cname%3AString%3F%3Dnil%2Csame_thread%3Dfalse%2C%26block%29-class-method
 #
 # https://github.com/crystal-lang/crystal/blob/932f193ae/src/concurrent.cr#L60-L67
 module Non::Blocking

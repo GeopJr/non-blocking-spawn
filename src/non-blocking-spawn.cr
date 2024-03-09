@@ -23,15 +23,20 @@ module Non::Blocking
   # ```
   def spawn(*, name : String? = nil, same_thread = false, &block) : Fiber
     fiber = Fiber.new(name, &block)
-    if same_thread
-      fiber.@current_thread.set(Thread.current)
-    else
-      non_blocking_threads = threads
-      # If there are threads available other than the current one,
-      # set fiber's thread as a random one from the array.
-      fiber.@current_thread.set(non_blocking_threads.sample) unless non_blocking_threads.size == 0
-    end
-    Crystal::Scheduler.enqueue fiber
+
+    {% if flag?(:preview_mt) %}
+      fiber
+      if same_thread
+        fiber.set_current_thread
+      else
+        non_blocking_threads = threads
+        # If there are threads available other than the current one,
+        # set fiber's thread as a random one from the array.
+        fiber.set_current_thread(non_blocking_threads.sample) unless non_blocking_threads.size == 0
+      end
+    {% end %}
+
+    fiber.enqueue
     fiber
   end
 
